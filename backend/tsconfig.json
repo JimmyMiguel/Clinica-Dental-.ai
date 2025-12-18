@@ -1,0 +1,28 @@
+{
+    "compilerOptions": {
+      /* Configuración Base */
+      "target": "ES2022",
+      "module": "nodeNext",
+      "rootDir": "./src",
+      "outDir": "./dist",
+      "moduleResolution": "nodeNext",
+      "lib": ["dom", "es2023"], // Acepta la resolución de módulos moderna y clásica
+      
+      /* ESTO ES LO QUE ARREGLA TU ERROR */
+      "baseUrl": "./src",
+      "paths": {
+        "@database/*": ["database/*"],
+        "@config/*": ["config/*"],
+        "@agent/*": ["agent/*"]
+      },
+  
+      /* Reglas estrictas */
+      "strict": true,
+      "noImplicitAny": true,
+      "esModuleInterop": true,
+      "skipLibCheck": true,
+      "forceConsistentCasingInFileNames": true
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules"]
+  }
