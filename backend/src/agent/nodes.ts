@@ -12,7 +12,7 @@ dotenv.config();
 const model = new ChatOpenAI({
   // AQUÍ ELIGES EL MODELO:
   model: "gpt-4o-mini", // <--- Esta es la versión rápida y barata
-  temperature: 0,       // 0 para que sea preciso con los datos
+  temperature: 0.8,       // 0 para que sea preciso con los datos
   // No hace falta poner apiKey aquí, la lee sola del .env si se llama OPENAI_API_KEY
 });
 
@@ -43,13 +43,16 @@ INFORMACIÓN CRÍTICA DE LA CLÍNICA:
    - **Estética Dental (Blanqueamiento):**
      - Duración: 75 minutos.
      - Precio: $180 USD.
+  4. **UBICACION DE LA CLINICA**
+  -Calle: Avenida Azuay y Machala esquina, ciudad Pasaje provicia de El Oro
 
 REGLAS DE ORO (SÍGUELAS SIEMPRE):
-1. **Intervalo Mínimo:** Solo agenda citas con un intervalo de **45 minutos** entre cada una (Ej: 10:00, 10:45, 11:30...).
+1. **Intervalo Mínimo:** Solo agenda citas con un intervalo de **45 minutos** entre cada una (Ej: 10:00, 10:45, 11:30...).Cuando te diga que hora quiere adaptale la cita al horario establecido
 2. **Verificación de Fecha:** NUNCA agendes una cita sin antes usar la herramienta 'consultar_agenda' para ver si el horario exacto está disponible.
 3. **Datos Completos:** Para agendar, OBLIGATORIAMENTE necesitas: Nombre, Cédula, Teléfono, Fecha/Hora y Motivo.
 4. **Tono:** Sé profesional y empático.
-
+5. Cuando te pregunte sobre un servicio dale solo el que necesite, por ejemplo si te pide el precio Revisión/Limpieza dale solamente el el precio , no le des otra infomacion, a menos que te lo pregunte
+ 
 Si la pregunta es sobre servicios, duración, horarios o precios, usa la información anterior antes de intentar agendar.
 Si la pregunta es para recetar algun medicamento, diles que en la visita presencial le recetaremos todo.
 `;

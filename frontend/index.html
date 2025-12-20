@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clínica Dental Sonrisas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="app">
+      <header class="chat-header">
+        <div class="logo-area">
+          <span class="tooth-icon">🦷</span>
+          <div class="clinic-info">
+            <h1>Clínica Dental Sonrisas</h1>
+            <p class="doctor-name">Dr. Jimmy Galarza</p>
+          </div>
+        </div>
+      </header>
+
+      <main id="chat-container" class="chat-messages">
+        <div class="message bot">
+          <div class="avatar">👨‍⚕️</div>
+          <div class="bubble">
+            Hola, soy el <strong>Dr. Jimmy</strong>. ¿En qué puedo ayudarte hoy?
+          </div>
+        </div>
+      </main>
+
+      <footer class="chat-input-area">
+        <form id="chat-form">
+          <input 
+            type="text" 
+            id="user-input" 
+            placeholder="Escribe tu mensaje aquí..." 
+            autocomplete="off"
+          />
+          <button type="submit" id="send-btn">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+          </button>
+        </form>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

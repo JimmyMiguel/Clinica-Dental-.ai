@@ -2,7 +2,7 @@
 import { State, StateAnnotation } from "@agent/state";
 import { callModel, toolNode } from "@agent/nodes";
 import { END, StateGraph } from "@langchain/langgraph";
-import { AIMessage, HumanMessage } from "@langchain/core/messages";
+import { AIMessage, HumanMessage, BaseMessage } from "@langchain/core/messages";
 
 // --- 1. FUNCIÓN DE DECISIÓN (EL ROUTER) ---
 // Esta versión incluye protecciones de seguridad para evitar errores "undefined".
@@ -88,18 +88,29 @@ export const buildAgentGraph = () => {
 // Instancia única del grafo compilado
 const agentExecutor = buildAgentGraph();
 
+// Almacenamiento en memoria del historial de conversaciones por sesión
+// En producción, esto debería estar en una base de datos
+const conversationHistory = new Map<string, BaseMessage[]>();
+
 /**
  * Función que llama el servidor Express.
  * Se encarga de formatear la entrada y limpiar la salida.
+ * @param userMessage - Mensaje del usuario
+ * @param sessionId - ID de sesión para mantener el historial (opcional, por defecto 'default')
  */
-export async function invokeAgent(userMessage: string) {
+export async function invokeAgent(userMessage: string, sessionId: string = 'default') {
   // Convertimos el string del usuario a un HumanMessage de LangChain
   const inputMessage = new HumanMessage(userMessage);
 
-  // Estado inicial
+  // Obtenemos el historial previo de la sesión, o un array vacío si no existe
+  const previousMessages = conversationHistory.get(sessionId) || [];
+
+  // Estado inicial con el historial previo + el nuevo mensaje
   const inputs: State = {
-    messages: [inputMessage],
+    messages: [...previousMessages, inputMessage],
   };
+
+  console.log(`📚 Historial previo: ${previousMessages.length} mensaje(s) en sesión "${sessionId}"`);
 
   try {
     console.log(`🚀 invokeAgent: Iniciando ejecución del grafo con mensaje: "${userMessage}"`);
@@ -142,6 +153,12 @@ export async function invokeAgent(userMessage: string) {
         .join(" ")
         .trim()
       : (lastMessage.content as string);
+
+    // ACTUALIZAR HISTORIAL: Guardamos todos los mensajes (historial previo + mensaje usuario + respuesta)
+    // Esto incluye también los mensajes intermedios de las herramientas
+    const updatedHistory = result.messages;
+    conversationHistory.set(sessionId, updatedHistory);
+    console.log(`💾 Historial actualizado: ${updatedHistory.length} mensaje(s) en sesión "${sessionId}"`);
 
     return content || "Lo siento, no pude procesar una respuesta.";
 
