@@ -7,8 +7,9 @@ const chatContainer = document.getElementById('chat-container') as HTMLDivElemen
 const sendBtn = document.getElementById('send-btn') as HTMLButtonElement;
 
 // URL de tu Backend (Asegúrate de que el puerto coincida)
-const API_URL = 'http://localhost:3000/api/chat';
-
+const API_URL = import.meta.env.VITE_API_URL 
+  ? `${import.meta.env.VITE_API_URL}/api/chat` 
+  : 'http://localhost:3000/api/chat';
 // Generar o obtener sessionId para mantener el historial de conversación
 const getSessionId = (): string => {
   let sessionId = localStorage.getItem('chat_session_id');
