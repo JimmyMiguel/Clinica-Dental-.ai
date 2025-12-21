@@ -1,12 +1,12 @@
 // src/agent/tools.ts
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
-import { 
-    crearCita, 
-    buscarCitasPorCedula, 
-    obtenerCitasPorDia, 
-    cancelarCita, 
-    actualizarCita 
+import {
+  crearCita,
+  buscarCitasPorCedula,
+  obtenerCitasPorDia,
+  cancelarCita,
+  actualizarCita
 } from "@database/appointments";
 
 // --- HERRAMIENTA 1: AGENDAR (Crear) ---
@@ -29,7 +29,14 @@ export const toolAgendarCita = tool(
   },
   {
     name: "agendar_cita",
-    description: "Guarda una nueva cita. Úsala SOLO cuando el usuario confirme todos los datos.",
+    description: `
+    Guarda una nueva cita. 
+    Úsala SOLO cuando el usuario confirme todos los datos y quiera crear una cita NUEVA.
+    
+    IMPORTANTE: 
+    - Si el usuario pregunta por una cita ya existente, NO uses esta herramienta (usa 'consultar_cita').
+    - Si el usuario pregunta disponibilidad, sugiere horarios primero.
+  `,
     //Es el prompt del sistema para esta herramienta.
     schema: z.object({
       patientName: z.string().describe("Nombre completo del paciente"),
@@ -46,11 +53,28 @@ export const toolConsultarHistorial = tool(
   async (input) => {
     const citas = await buscarCitasPorCedula(input.identificationNumber);
     if (citas.length === 0) return "No hay citas registradas para esta cédula.";
-    return JSON.stringify(citas);
+
+    // Formatear las fechas preservando el valor exacto del objeto Date
+    // Usamos los métodos get* para evitar conversiones de zona horaria
+    const citasFormateadas = citas.map(cita => {
+      const fecha = cita.date;
+      const año = fecha.getFullYear();
+      const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+      const dia = String(fecha.getDate()).padStart(2, '0');
+      const hora = String(fecha.getHours()).padStart(2, '0');
+      const minutos = String(fecha.getMinutes()).padStart(2, '0');
+
+      return {
+        ...cita,
+        date: `${dia}/${mes}/${año} ${hora}:${minutos}`
+      };
+    });
+
+    return JSON.stringify(citasFormateadas);
   },
   {
     name: "consultar_historial",
-    description: "Busca citas pasadas o futuras de un paciente por su cédula.",
+    description: "Buscar la fecha de la cita con el numero de Cédula/DNI",
     schema: z.object({
       identificationNumber: z.string().describe("Cédula/DNI del paciente")
     })
@@ -63,11 +87,11 @@ export const toolConsultarAgenda = tool(
     const fechaBusqueda = new Date(input.date);
     const citas = await obtenerCitasPorDia(fechaBusqueda);
     if (citas.length === 0) return "Agenda libre. Puedes agendar a cualquier hora.";
-    
+
     // Solo devolvemos las horas ocupadas para que la IA decida
     const horas = citas.map(c => {
-        const d = new Date(c.date);
-        return d.toLocaleTimeString(); 
+      const d = new Date(c.date);
+      return d.toLocaleTimeString();
     });
     return `Horas OCUPADAS en ese día: ${horas.join(", ")}.`;
   },
@@ -99,10 +123,10 @@ export const toolModificarCita = tool(
   async (input) => {
     // Preparamos solo los datos que la IA nos envió
     const datosActualizar: any = {};
-    
+
     if (input.newDate) datosActualizar.date = new Date(input.newDate);
     if (input.newReason) datosActualizar.reason = input.newReason;
-    
+
     // Llamamos a la función de DB
     return await actualizarCita(input.idCita, datosActualizar);
   },
@@ -119,9 +143,9 @@ export const toolModificarCita = tool(
 
 // --- EXPORTAR TODO EL KIT ---
 export const tools = [
-    toolAgendarCita, 
-    toolConsultarHistorial, 
-    toolConsultarAgenda, 
-    toolCancelarCita, 
-    toolModificarCita
+  toolAgendarCita,
+  toolConsultarHistorial,
+  toolConsultarAgenda,
+  toolCancelarCita,
+  toolModificarCita
 ];
