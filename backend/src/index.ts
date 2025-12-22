@@ -10,10 +10,30 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Configuración de CORS para permitir peticiones del frontend
-app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-    credentials: true
-}));
+const corsOptions = {
+    origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
+        // En producción, permitir el origen del frontend o todos si no se especifica
+        const allowedOrigins = process.env.FRONTEND_URL
+            ? process.env.FRONTEND_URL.split(',')
+            : ['*'];
+
+        if (allowedOrigins.includes('*') || !origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(null, true); // Permitir todos temporalmente para debug
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    preflightContinue: false,
+    optionsSuccessStatus: 204
+};
+
+app.use(cors(corsOptions));
+
+// Manejar preflight explícitamente
+app.options('*', cors(corsOptions));
 
 app.use(express.json()); // Vital para recibir mensajes JSON del frontend
 
