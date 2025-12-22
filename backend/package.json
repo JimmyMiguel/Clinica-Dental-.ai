@@ -10,7 +10,7 @@
     "vercel-build": "echo 'No build needed for Vercel node runtime'"
   },
   "engines": {
-    "node": "20.x"    
+"node": ">=20.0.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",

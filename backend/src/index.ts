@@ -34,12 +34,18 @@ app.use(cors(corsOptions));
 
 app.use(express.json()); // Vital para recibir mensajes JSON del frontend
 
+// Logging para debug (siempre activo para diagnosticar problemas)
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.path} - Origin: ${req.get('origin') || 'none'}`);
+    next();
+});
+
 // Manejar preflight explícitamente ANTES de las rutas
 app.options('/api/chat', cors(corsOptions));
-app.options('*', cors(corsOptions));
-
+app.options('/{*path}', cors(corsOptions));
 // --- RUTA PRINCIPAL DE CHATBOT ---
 app.post('/api/chat', async (req, res) => {
+    console.log('✅ Ruta /api/chat recibida');
     const userMessage = req.body.message;
     const sessionId = req.body.sessionId || 'default'; // Permite pasar un sessionId o usa 'default'
 
@@ -70,6 +76,11 @@ app.post('/api/chat', async (req, res) => {
 // Ruta de prueba
 app.get('/', (req, res) => {
     res.send('🦷 Servidor de Clínica Dental IA: EN LÍNEA y CHAT LISTO.');
+});
+
+// Ruta de prueba para verificar que /api funciona
+app.get('/api/test', (req, res) => {
+    res.json({ message: 'API funcionando correctamente', path: req.path, method: req.method });
 });
 
 // Arrancar el servidor
