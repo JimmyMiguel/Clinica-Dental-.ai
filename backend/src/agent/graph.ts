@@ -1,6 +1,6 @@
 // src/agent/graph.ts
-import { State, StateAnnotation } from "@agent/state";
-import { callModel, toolNode } from "@agent/nodes";
+import { State, StateAnnotation } from "./state";
+import { callModel, toolNode } from "./nodes";
 import { END, StateGraph } from "@langchain/langgraph";
 import { AIMessage, HumanMessage, BaseMessage } from "@langchain/core/messages";
 

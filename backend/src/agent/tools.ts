@@ -7,7 +7,7 @@ import {
   obtenerCitasPorDia,
   cancelarCita,
   actualizarCita
-} from "@database/appointments";
+} from "../database/appointments";
 
 // --- HERRAMIENTA 1: AGENDAR (Crear) ---
 //esta funcion tool envuelve la funcion crearCit para que entienda la ia

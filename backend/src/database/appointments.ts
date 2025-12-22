@@ -1,6 +1,6 @@
 // src/database/appointments.ts
-import { getDb } from '@config/firebase';
-import { CitaDental } from '@database/schemas';
+import { getDb } from '../config/firebase';
+import { CitaDental } from './schemas';
 
 // --- FUNCIÓN 1: CREAR CITA (Escritura) ---
 export async function crearCita(cita: CitaDental): Promise<string> {
