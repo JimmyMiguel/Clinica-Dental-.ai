@@ -12,23 +12,23 @@ const PORT = process.env.PORT || 3000;
 // Configuración de CORS para permitir peticiones del frontend
 const corsOptions = {
     origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
-        // En producción, permitir el origen del frontend o todos si no se especifica
-        const allowedOrigins = process.env.FRONTEND_URL
-            ? process.env.FRONTEND_URL.split(',')
-            : ['*'];
-
-        if (allowedOrigins.includes('*') || !origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(null, true); // Permitir todos temporalmente para debug
-        }
+      const allowedOrigins = process.env.FRONTEND_URL
+        ? process.env.FRONTEND_URL.split(',')
+        : [];
+  
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('No permitido por CORS'));
+      }
     },
     credentials: true,
     methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     preflightContinue: false,
     optionsSuccessStatus: 204
-};
+  };
+  
 
 app.use(cors(corsOptions));
 

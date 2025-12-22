@@ -5,6 +5,7 @@ let initializationError: Error | null = null;
 
 function initializeFirebase(): admin.firestore.Firestore {
   // Si ya está inicializado, retornar la instancia
+  
   if (db) {
     return db;
   }
@@ -25,6 +26,8 @@ function initializeFirebase(): admin.firestore.Firestore {
     const projectId = process.env.FIREBASE_PROJECT_ID;
     const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
     const privateKey = process.env.FIREBASE_PRIVATE_KEY;
+    console.log('Variables de entorno:', { projectId, clientEmail, privateKey: privateKey ? 'OK' : 'NO' });
+
 
     if (!projectId || !clientEmail || !privateKey) {
       const error = new Error(
