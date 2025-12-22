@@ -32,10 +32,11 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// Manejar preflight explícitamente
-app.options('*', cors(corsOptions));
-
 app.use(express.json()); // Vital para recibir mensajes JSON del frontend
+
+// Manejar preflight explícitamente ANTES de las rutas
+app.options('/api/chat', cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 // --- RUTA PRINCIPAL DE CHATBOT ---
 app.post('/api/chat', async (req, res) => {
