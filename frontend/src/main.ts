@@ -6,10 +6,12 @@ const userInput = document.getElementById('user-input') as HTMLInputElement;
 const chatContainer = document.getElementById('chat-container') as HTMLDivElement;
 const sendBtn = document.getElementById('send-btn') as HTMLButtonElement;
 
-// URL de tu Backend (Asegúrate de que el puerto coincida)
+// URL de tu Backend
+// Si están en el mismo proyecto: usar ruta relativa /api/chat
+// Si están en proyectos separados: configurar VITE_API_URL en Vercel con la URL completa del backend
 const API_URL = import.meta.env.VITE_API_URL 
   ? `${import.meta.env.VITE_API_URL}/api/chat` 
-  : 'http://localhost:3000/api/chat';
+  : '/api/chat'; // Ruta relativa para mismo proyecto Vercel
 // Generar o obtener sessionId para mantener el historial de conversación
 const getSessionId = (): string => {
   let sessionId = localStorage.getItem('chat_session_id');

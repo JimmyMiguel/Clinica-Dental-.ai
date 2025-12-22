@@ -12,23 +12,27 @@ const PORT = process.env.PORT || 3000;
 // Configuración de CORS para permitir peticiones del frontend
 const corsOptions = {
     origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
-      const allowedOrigins = process.env.FRONTEND_URL
-        ? process.env.FRONTEND_URL.split(',')
-        : [];
-  
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('No permitido por CORS'));
-      }
+        const allowedOrigins = process.env.FRONTEND_URL
+            ? process.env.FRONTEND_URL.split(',').map(url => url.trim())
+            : [];
+
+        // Si no hay origen (peticiones del mismo dominio o herramientas como Postman), permitir
+        // Si hay origen y está en la lista, permitir
+        // Si hay origen pero no está en la lista y hay allowedOrigins configurados, rechazar
+        if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            console.warn(`CORS bloqueado para origen: ${origin}. Orígenes permitidos:`, allowedOrigins);
+            callback(new Error('No permitido por CORS'));
+        }
     },
     credentials: true,
     methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     preflightContinue: false,
     optionsSuccessStatus: 204
-  };
-  
+};
+
 
 app.use(cors(corsOptions));
 
@@ -42,7 +46,7 @@ app.use((req, res, next) => {
 
 // Manejar preflight explícitamente ANTES de las rutas
 app.options('/api/chat', cors(corsOptions));
-app.options('/{*path}', cors(corsOptions));
+app.options('*', cors(corsOptions));
 // --- RUTA PRINCIPAL DE CHATBOT ---
 app.post('/api/chat', async (req, res) => {
     console.log('✅ Ruta /api/chat recibida');
