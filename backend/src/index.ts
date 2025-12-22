@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 3000;
 
 // Configuración de CORS para permitir peticiones del frontend
 app.use(cors({
-    origin: 'http://localhost:5173', // Puerto por defecto de Vite
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173', 
     credentials: true
 }));
 
@@ -51,7 +51,10 @@ app.get('/', (req, res) => {
 });
 
 // Arrancar el servidor
-app.listen(PORT, () => {
-    console.log(`\n🚀 Servidor corriendo en http://localhost:${PORT}`);
-    console.log(`🔌 API Chat lista en: http://localhost:${PORT}/api/chat (POST)`);
-});
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`🚀 Servidor local en http://localhost:${PORT}`);
+    });
+}
+// Al final de tu archivo index.ts
+export default app;
