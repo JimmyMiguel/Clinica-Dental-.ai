@@ -1,10 +1,11 @@
 // src/database/appointments.ts
-import { db } from '@config/firebase';
+import { getDb } from '@config/firebase';
 import { CitaDental } from '@database/schemas';
 
 // --- FUNCIÓN 1: CREAR CITA (Escritura) ---
 export async function crearCita(cita: CitaDental): Promise<string> {
     try {
+        const db = getDb();
         const collectionRef = db.collection('appointments');
 
         // Guardamos en Firebase
@@ -25,6 +26,7 @@ export async function crearCita(cita: CitaDental): Promise<string> {
 // --- FUNCIÓN 2: BUSCAR POR CÉDULA (Lectura Historial) ---
 export async function buscarCitasPorCedula(cedula: string): Promise<CitaDental[]> {
     try {
+        const db = getDb();
         const citasSnapshot = await db.collection('appointments')
             .where('identificationNumber', '==', cedula)
             .get();
@@ -47,6 +49,7 @@ export async function buscarCitasPorCedula(cedula: string): Promise<CitaDental[]
 // --- FUNCIÓN 3: BUSCAR POR DÍA (Lectura Agenda) ---
 export async function obtenerCitasPorDia(fecha: Date): Promise<CitaDental[]> {
     try {
+        const db = getDb();
         // 1. Calcular inicio del día (00:00:00)
         const inicioDia = new Date(fecha);
         inicioDia.setHours(0, 0, 0, 0);
@@ -77,10 +80,11 @@ export async function obtenerCitasPorDia(fecha: Date): Promise<CitaDental[]> {
 }
 export async function cancelarCita(idCita: string): Promise<string> {
     try {
+        const db = getDb();
         await db.collection('appointments').doc(idCita).update({
             status: 'cancelada'
         });
-        
+
         console.log(`🗑 Cita ${idCita} marcada como cancelada.`);
         return `Cita cancelada correctamente.`;
 
@@ -97,6 +101,7 @@ export async function cancelarCita(idCita: string): Promise<string> {
  */
 export async function actualizarCita(idCita: string, nuevosDatos: Partial<CitaDental>): Promise<string> {
     try {
+        const db = getDb();
         await db.collection('appointments').doc(idCita).update({
             ...nuevosDatos,
             updatedAt: new Date() // Auditoría: fecha de modificación

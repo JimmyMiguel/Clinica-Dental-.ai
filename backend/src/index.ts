@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 3000;
 
 // Configuración de CORS para permitir peticiones del frontend
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173', 
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
     credentials: true
 }));
 
@@ -39,6 +39,7 @@ app.post('/api/chat', async (req, res) => {
 
     } catch (error) {
         console.error("❌ Error CRÍTICO en la ejecución del Agente:", error);
+        console.error("Stack trace:", error instanceof Error ? error.stack : 'No stack trace available');
         res.status(500).json({
             response: "Lo siento, tuve un problema interno de comunicación. Por favor, inténtalo de nuevo más tarde."
         });
