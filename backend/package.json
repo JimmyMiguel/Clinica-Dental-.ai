@@ -1,12 +1,16 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/index.ts",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon --exec ts-node -r tsconfig-paths/register src/index.ts",
+"dev": "nodemon --exec ts-node src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "vercel-build": "echo 'No build needed for Vercel node runtime'"
+  },
+  "engines": {
+    "node": "20.x"    
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
