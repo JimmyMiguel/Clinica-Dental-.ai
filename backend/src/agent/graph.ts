@@ -5,28 +5,16 @@ import { END, StateGraph } from "@langchain/langgraph";
 import { AIMessage, HumanMessage, BaseMessage } from "@langchain/core/messages";
 
 // --- 1. FUNCIÓN DE DECISIÓN (EL ROUTER) ---
-// Esta versión incluye protecciones de seguridad para evitar errores "undefined".
-const shouldContinue = (state: State): string => {
-  // Logging para depuración (seguro, sin serialización completa que puede fallar)
-  console.log(`🔀 shouldContinue: Evaluando estado...`);
-  try {
-    console.log(`🔀 shouldContinue: Estado tiene messages?`, !!state?.messages);
-    console.log(`🔀 shouldContinue: Cantidad de messages:`, state?.messages?.length ?? 0);
-  } catch (e) {
-    console.error("⚠️ Error al loggear estado:", e);
-  }
-
-  // 1. Extracción segura con valor por defecto
+ const shouldContinue = (state: State): string => {
+  
+  // 1. Extracción segura con valor por defecto cuando empieza el chat
   const { messages = [] } = state;
 
   // 2. Verificación de seguridad: ¿Hay mensajes?
   if (!messages || messages.length === 0) {
     console.error("⚠️ ALERTA: No se encontraron mensajes en el estado. Terminando flujo para evitar crash.");
-    console.error("⚠️ Estado recibido:", state);
-    return "end";
+     return "end";
   }
-
-  console.log(`🔀 shouldContinue: Hay ${messages.length} mensaje(s) en el estado`);
 
   // 3. Obtenemos el último mensaje de forma segura
   const lastMessage = messages[messages.length - 1] as AIMessage;
@@ -37,15 +25,12 @@ const shouldContinue = (state: State): string => {
     return "end";
   }
 
-  console.log(`🔀 shouldContinue: Último mensaje tipo: ${lastMessage.constructor.name}`);
-
   // 5. Verificamos si GPT quiere usar herramientas
   // Usamos el operador '?.' para evitar errores si tool_calls no existe
   if (lastMessage.tool_calls && lastMessage.tool_calls.length > 0) {
     console.log(`--> DECISIÓN: Usar Herramientas 🛠️ (${lastMessage.tool_calls.length} llamada(s))`);
     return "tools";
   }
-
   // 6. Si no, terminamos
   console.log("--> DECISIÓN: Terminar conversación (Respuesta a usuario) 💬");
   return "end";
@@ -110,18 +95,10 @@ export async function invokeAgent(userMessage: string, sessionId: string = 'defa
     messages: [...previousMessages, inputMessage],
   };
 
-  console.log(`📚 Historial previo: ${previousMessages.length} mensaje(s) en sesión "${sessionId}"`);
-
+ 
   try {
-    console.log(`🚀 invokeAgent: Iniciando ejecución del grafo con mensaje: "${userMessage}"`);
-    console.log(`🚀 invokeAgent: Estado inicial tiene ${inputs.messages.length} mensaje(s)`);
-
     // Ejecutamos el grafo
     const result = await agentExecutor.invoke(inputs) as State;
-
-    console.log(`✅ invokeAgent: Grafo completó ejecución`);
-    console.log(`📊 invokeAgent: Resultado tiene messages?`, !!result?.messages);
-    console.log(`📊 invokeAgent: Cantidad de messages en resultado:`, result?.messages?.length ?? 0);
 
     // Validación: Verificar que result existe y tiene la estructura esperada
     if (!result) {
